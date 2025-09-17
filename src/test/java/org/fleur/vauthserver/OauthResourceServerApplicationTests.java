@@ -1,4 +1,4 @@
-package org.fleur.oauthresourceserver;
+package org.fleur.vauthserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

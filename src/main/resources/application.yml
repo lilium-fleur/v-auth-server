@@ -1,1 +1,20 @@
-spring.application.name=v-auth-server
+server:
+  port: 9000
+logging:
+  level:
+    org.springframework.security: trace
+spring:
+  application:
+    name: v-auth-server
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?currentSchema=${DB_SCHEMA}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+

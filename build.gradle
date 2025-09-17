@@ -6,7 +6,7 @@ plugins {
 
 group = 'org.fleur'
 version = '0.0.1-SNAPSHOT'
-description = 'oauth-resource-server'
+description = 'v-auth-server'
 
 java {
     toolchain {
@@ -30,6 +30,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.liquibase:liquibase-core'
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
