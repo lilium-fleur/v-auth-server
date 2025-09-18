@@ -1,7 +1,7 @@
 package org.fleur.vauthserver.user;
 
+import org.fleur.vauthserver.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.Optional;
 import java.util.UUID;

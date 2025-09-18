@@ -1,6 +1,7 @@
 package org.fleur.vauthserver.user;
 
 import lombok.RequiredArgsConstructor;
+import org.fleur.vauthserver.user.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,8 +14,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
+        User appUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException
                         ("User with username " + username + " not found"));
+
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(appUser.getUsername())
+                .password(appUser.getPassword())
+                .authorities(appUser.getAuthorities())
+                .build();
     }
 }
