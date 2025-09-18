@@ -4,13 +4,10 @@
 CREATE TABLE users
 (
     id               UUID PRIMARY KEY,
-    email            VARCHAR(100) NOT NULL,
+    email            VARCHAR(100) NOT NULL UNIQUE,
     username         VARCHAR(50)  NOT NULL UNIQUE,
     password         VARCHAR(200),
-    provider         VARCHAR(50)  NOT NULL,
-    provider_user_id VARCHAR(200),
     created_at       TIMESTAMPTZ  NOT NULL,
-    last_modified_at TIMESTAMPTZ  NOT NULL,
-    UNIQUE (email, provider)
+    last_modified_at TIMESTAMPTZ  NOT NULL
 );
 --rollback DROP TABLE users
