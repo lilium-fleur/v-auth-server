@@ -5,16 +5,19 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import lombok.RequiredArgsConstructor;
+import org.fleur.vauthserver.user.CustomUserDetailsService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -44,33 +47,57 @@ import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class AuthorizationSecurityConfig {
+    private final CustomUserDetailsService userDetailsService;
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Order(1)
     public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer asc =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers(asc.getEndpointsMatcher()))
                 .securityMatcher(asc.getEndpointsMatcher())
+                .csrf(csrf -> csrf.ignoringRequestMatchers(asc.getEndpointsMatcher()))
+                .cors(Customizer.withDefaults())
                 .with(asc, (authorizationServer) ->
                         authorizationServer
                                 .oidc(Customizer.withDefaults())
                 )
-                .authorizeHttpRequests((authorize) ->
-                        authorize
-                                .anyRequest().authenticated()
-                )
+                .userDetailsService(userDetailsService)
+                .authorizeHttpRequests(req -> req.anyRequest().authenticated())
                 .exceptionHandling((exceptions) -> exceptions
                         .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/login"),
+                                new LoginUrlAuthenticationEntryPoint("/auth/login"),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
                         )
                 );
         return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain api(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/auth/login", "/auth/register"))
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers(HttpMethod.GET, "/auth/login_page", "/auth/register", "/auth/login", "/error").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/error").permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(form -> form
+                        .loginPage("/auth/login")
+                        .loginProcessingUrl("/auth/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password"))
+                .userDetailsService(userDetailsService);
+        return http.build();
+    }
+
+    @Bean
+    public UserDetailsService users() {
+        return userDetailsService;
     }
 
     @Bean

@@ -18,16 +18,19 @@ public class AuthService {
 
     @Transactional
     public AuthDto register(RegisterDto registerDto) {
-        userRepository.findByUsername(registerDto.username())
-                .ifPresent(user -> {
-                    throw new BadRequestException("Username is already in use");
-                });
+        if (userRepository.existsByEmail(registerDto.email())) {
+            throw new BadRequestException("Email taken");
+        }
+        if (userRepository.existsByUsername(registerDto.username())) {
+            throw new BadRequestException("Username taken");
+        }
 
         User user = User.builder()
                 .email(registerDto.email())
                 .username(registerDto.username())
                 .password(passwordEncoder.encode(registerDto.password()))
                 .build();
+
         User saved = userRepository.save(user);
 
         return AuthDto.builder()

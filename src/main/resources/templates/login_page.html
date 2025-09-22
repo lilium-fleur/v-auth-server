@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Log in</title>
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --card: #fff;
+            --ink: #111;
+            --muted: #6b7280;
+            --brand: #4f46e5;
+            --ok: #16a34a;
+            --err: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+            background: linear-gradient(160deg, #f9fafb, #eef2ff);
+            color: var(--ink);
+        }
+
+        .wrap {
+            min-height: 100svh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px;
+            border-radius: 16px;
+            margin-bottom: 8px;
+        }
+
+        .header-content {
+            font-size: 22px
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: var(--muted);
+            margin: 12px 0 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #c7d2fe;
+            box-shadow: 0 0 0 3px #e0e7ff;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--brand);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn[disabled] {
+            opacity: .6;
+            cursor: default;
+        }
+
+        .msg {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .msg.ok {
+            display: block;
+            background: #ecfdf5;
+            color: #065f46;
+        }
+
+        .msg.err {
+            display: block;
+            background: #fef2f2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <main class="card" role="main">
+        <div class="header">
+            <h3 class="header-content">Sign In</h3>
+        </div>
+        <section id="panel-login" role="tabpanel" aria-labelledby="tab-login">
+            <form id="form-login" action="/auth/login" method="post" novalidate>
+                <label for="login-email">Email</label>
+                <input id="login-email" name="email" type="email" autocomplete="email" required/>
+
+                <label for="login-pass">Password</label>
+                <input id="login-pass" name="password" type="password" autocomplete="current-password" required/>
+
+                <button class="btn" type="submit">Confirm</button>
+                <p id="login-msg" class="msg" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+    </main>
+</div>
+
+<!--<script>-->
+<!--    const API_BASE = "http://localhost:9000";-->
+
+<!--    const tabLogin = document.getElementById('tab-login');-->
+<!--    const tabRegister = document.getElementById('tab-register');-->
+<!--    const panelLogin = document.getElementById('panel-login');-->
+<!--    const panelRegister = document.getElementById('panel-register');-->
+
+<!--    const fLogin = document.getElementById('form-login');-->
+<!--    const fRegister = document.getElementById('form-register');-->
+<!--    const msgLogin = document.getElementById('login-msg');-->
+<!--    const msgReg = document.getElementById('reg-msg');-->
+
+<!--    function activate(tab) {-->
+<!--        const loginActive = tab === 'login';-->
+<!--        tabLogin.classList.toggle('active', loginActive);-->
+<!--        tabRegister.classList.toggle('active', !loginActive);-->
+<!--        tabLogin.setAttribute('aria-selected', loginActive);-->
+<!--        tabRegister.setAttribute('aria-selected', !loginActive);-->
+<!--        panelLogin.hidden = !loginActive;-->
+<!--        panelRegister.hidden = loginActive;-->
+<!--    }-->
+<!--    tabLogin.addEventListener('click', () => activate('login'));-->
+<!--    tabRegister.addEventListener('click', () => activate('register'));-->
+
+<!--    function showMsg(el, kind, text){-->
+<!--        el.className = 'msg ' + (kind === 'ok' ? 'ok' : 'err');-->
+<!--        el.textContent = text;-->
+<!--    }-->
+
+<!--    function clearMsg(el){ el.className = 'msg'; el.textContent = ''; }-->
+
+<!--    fLogin.addEventListener('submit', async (e) => {-->
+<!--        e.preventDefault();-->
+<!--        clearMsg(msgLogin);-->
+<!--        const email = fLogin.email.value.trim();-->
+<!--        const password = fLogin.password.value;-->
+<!--        if(!email || !password){ showMsg(msgLogin, 'err', 'Please provide both email and password.'); return; }-->
+<!--        try {-->
+<!--            const res = await fetch(`${API_BASE}/auth/login`, {-->
+<!--                method: 'POST',-->
+<!--                headers: { 'content-type': 'application/json' },-->
+<!--                credentials: 'include',-->
+<!--                body: JSON.stringify({ email, password })-->
+<!--            });-->
+<!--            const data = await res.json().catch(() => ({}));-->
+<!--            if(!res.ok) throw new Error(data.message || 'Login failed.');-->
+<!--            showMsg(msgLogin, 'ok', 'Login successful. Redirecting to /app.');-->
+<!--            // window.location.href = '/app';-->
+<!--        } catch (err) {-->
+<!--            showMsg(msgLogin, 'err', err.message);-->
+<!--        }-->
+<!--    });-->
+
+<!--    fRegister.addEventListener('submit', async (e) => {-->
+<!--        e.preventDefault();-->
+<!--        clearMsg(msgReg);-->
+<!--        const name = fRegister.name.value.trim();-->
+<!--        const email = fRegister.email.value.trim();-->
+<!--        const password = fRegister.password.value;-->
+<!--        const confirm = fRegister.confirm.value;-->
+<!--        if(!name || !email || !password){ showMsg(msgReg, 'err', 'All fields are required.'); return; }-->
+<!--        if(password !== confirm){ showMsg(msgReg, 'err', 'Passwords do not match.'); return; }-->
+<!--        try {-->
+<!--            const res = await fetch(`${API_BASE}/api/auth/register`, {-->
+<!--                method: 'POST',-->
+<!--                headers: { 'content-type': 'application/json' },-->
+<!--                body: JSON.stringify({ name, email, password })-->
+<!--            });-->
+<!--            const data = await res.json().catch(() => ({}));-->
+<!--            if(!res.ok) throw new Error(data.message || 'Registration failed.');-->
+<!--            showMsg(msgReg, 'ok', 'Registration successful. Please sign in.');-->
+<!--            activate('login');-->
+<!--            fRegister.reset();-->
+<!--        } catch (err) {-->
+<!--            showMsg(msgReg, 'err', err.message);-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+</body>
+</html>
