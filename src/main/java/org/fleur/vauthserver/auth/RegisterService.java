@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class AuthService {
+public class RegisterService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
