@@ -49,7 +49,6 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> validation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = ex
                 .getBindingResult()
@@ -60,7 +59,10 @@ public class ControllerExceptionHandler {
                         f -> Optional.ofNullable(f.getDefaultMessage()).orElse("Invalid"),
                         (a, b) -> a
                 ));
-
+        var global = ex.getBindingResult().getGlobalErrors().stream()
+                .map(err -> Optional.ofNullable(err.getDefaultMessage()).orElse("Invalid"))
+                .collect(Collectors.joining(" ; "));
+        errors.put("global", global);
         return ResponseEntity.badRequest().body(Map.of("errors", errors));
     }
 
